@@ -7,19 +7,20 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %*******************!Set Dates Here!***************************************
-tradeDate = datenum('22122011','ddmmyyyy');
+tradeDate = datenum('18032004','ddmmyyyy');
 %                   ~~~~~~~~~~
-expiryDate = datenum('19012012','ddmmyyyy');
+expiryDate = datenum('17042004','ddmmyyyy');
 %                   ~~~~~~~~~~
 
 %*************!Set Sample Size for GARCH Fitting Here!*********************
 S = 1000; % the number of previous returns used to fit the GARCH model
 %   ~~~~
+%% 
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 % Load S&P500 data
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-sp500 = csvread('SPXDaily1950.csv',1);
+sp500 = csvread('/Users/rohankuntoji/Downloads/UCD Assignments & Resources/Derivatives/options-pricing-project/input resources/SPXDaily1950.csv',1);
 indexdates = x2mdate(sp500(:,1));
 index = sp500(:,6);
 rm =log(index(2:end)./index(1:end-1));
@@ -32,7 +33,7 @@ fprintf('Loaded Daily S&P500 data from %s to %s \n', ...
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 % Load VIX data
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-VIX = csvread('VIX.csv',1);
+VIX = csvread('/Users/rohankuntoji/Downloads/UCD Assignments & Resources/Derivatives/options-pricing-project/input resources/VIX.csv',1);
 vixDates = x2mdate(VIX(2:end,1));
 VIX = VIX(:,6);
 
@@ -40,6 +41,7 @@ fprintf('************************************************************* \n');
 fprintf('Loaded VIX data from %s to %s \n', ...
     datestr(min(vixDates)),datestr(max(vixDates)));
 fprintf('************************************************************* \n');
+%% 
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 % Select Garch(1,1)
@@ -62,6 +64,7 @@ realisedVol = sqrt(sum(ret_r.^2)*timeFactor);
 % Estimate a GARCH(1,1)
 fprintf('Fitting GARCH Model:\n');
 EstMdl = estimate(ToEstMdl,ret_h);
+%% 
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 % Variance sums over time - sum variance forecasts, convert to annualised
@@ -69,6 +72,7 @@ EstMdl = estimate(ToEstMdl,ret_h);
 forecastVariance = sum(forecast(EstMdl,nRets,'Y0',ret_h)); % monthly variance
 forecastVol = (timeFactor*forecastVariance).^0.5; % annualised vol
 vixVol = VIX(d3);
+%% 
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 % Print the results
@@ -76,7 +80,7 @@ vixVol = VIX(d3);
 fprintf('************************************************************* \n');
 fprintf('GARCH(1,1) forecast Vol: %.2f \n', 100*forecastVol);
 fprintf('************************************************************* \n');
-fprintf('VIX: %.2f \n', vixVol);
-fprintf('************************************************************* \n');
 fprintf('Realised Vol: %.2f \n', 100*realisedVol);
+fprintf('************************************************************* \n');
+fprintf('VIX: %.2f \n', vixVol);
 fprintf('************************************************************* \n');
